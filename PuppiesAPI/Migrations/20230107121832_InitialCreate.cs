@@ -16,9 +16,9 @@ namespace PuppiesAPI.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Name = table.Column<string>(type: "TEXT", nullable: false),
-                    Breed = table.Column<string>(type: "TEXT", nullable: false),
-                    BirthDate = table.Column<DateOnly>(type: "TEXT", nullable: false)
+                    Name = table.Column<string>(type: "TEXT", nullable: true),
+                    Breed = table.Column<string>(type: "TEXT", nullable: true),
+                    BirthDate = table.Column<DateOnly>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {

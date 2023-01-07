@@ -24,23 +24,24 @@ namespace PuppiesAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PuppyDTO>>> GetPuppies()
         {
-          if (_context.Puppies == null)
-          {
-              return NotFound();
-          }
+            if (_context.Puppies == null)
+            {
+                return NotFound();
+            }
+
             return await _context.Puppies
-                .Select(x => PuppyToPuppyDTO(x))
-                .ToListAsync();
+            .Select(x => PuppyToPuppyDTO(x))
+            .ToListAsync();
         }
 
         // GET: api/Puppies/5
         [HttpGet("{id}")]
         public async Task<ActionResult<PuppyDTO>> GetPuppy(Guid id)
         {
-          if (_context.Puppies == null)
-          {
-              return NotFound();
-          }
+            if (_context.Puppies == null)
+            {
+                return NotFound();
+            }
             var puppy = await _context.Puppies.FindAsync(id);
 
             if (puppy == null)
@@ -48,19 +49,14 @@ namespace PuppiesAPI.Controllers
                 return NotFound();
             }
 
-            return PuppyToPuppyDTO(puppy);
+            return (PuppyDTO) PuppyToPuppyDTO(puppy);
         }
 
         // PUT: api/Puppies/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPuppy(Guid id, PuppyDTO puppy)
+        public async Task<IActionResult> PutPuppy(Guid id, PuppyDTOnoID puppy)
         {
-            //if (id != puppy.Id)
-            //{
-            //    return BadRequest();
-            //}
-
             var pupperino = await _context.Puppies.FindAsync(id);
             if (pupperino== null)
             {
@@ -73,7 +69,7 @@ namespace PuppiesAPI.Controllers
             {
                 return BadRequest();
             }
-
+            
             if (puppy.Name is not null)
             {
                 pupperino.Name = puppy.Name;
@@ -109,12 +105,19 @@ namespace PuppiesAPI.Controllers
         // POST: api/Puppies
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<PuppyDTO>> PostPuppy(PuppyDTO puppyDTO)
+        public async Task<ActionResult<PuppyDTO>> PostPuppy(PuppyDTOnoID puppyDTO)
         {
+            if (puppyDTO.Name is null &&
+                puppyDTO.Breed is null &&
+                puppyDTO.BirthDate is null)
+            {
+                return BadRequest();
+            }
+
             var pupperino = new Puppy()
             {
-                Name = puppyDTO.Name ?? "Unknown Name",
-                Breed = puppyDTO.Breed ?? "Unknown Breed",
+                Name = puppyDTO.Name,
+                Breed = puppyDTO.Breed,
                 BirthDate = StringDateParser(puppyDTO.BirthDate)
             };
 
@@ -161,13 +164,14 @@ namespace PuppiesAPI.Controllers
         {
             return new PuppyDTO()
             {
-                Name= puppy.Name,
-                Breed= puppy.Breed,
-                BirthDate= puppy.BirthDate.ToString(),
+                Id = puppy.Id,
+                Name = puppy.Name,
+                Breed = puppy.Breed,
+                BirthDate = puppy.BirthDate.ToString(),
             };
         }
 
-        private static DateOnly StringDateParser(string? date)
+        private static DateOnly? StringDateParser(string? date)
         {
             if (DateOnly.TryParse(date, out DateOnly parsedDate))
             {
@@ -175,7 +179,7 @@ namespace PuppiesAPI.Controllers
             }
             else
             {
-                return new DateOnly(2000, 1, 1);
+                return null;
             }
         }
     }
