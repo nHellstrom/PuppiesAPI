@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -51,6 +52,23 @@ namespace PuppiesAPI.Controllers
 
             return (PuppyDTO) PuppyToPuppyDTO(puppy);
         }
+
+        // GET: api/Puppies/5
+        [HttpGet("searchname/{name}")]
+        public async Task<ActionResult<IEnumerable<PuppyDTO>>> GetPuppyByName(string name)
+        {
+            if (_context.Puppies == null)
+            {
+                return NotFound();
+            }
+
+            return await _context.Puppies
+                .Where(x => x.Name.ToLower().Contains(name.ToLower()))
+                .Select(x => PuppyToPuppyDTO(x))
+                .ToListAsync();
+        }
+
+
 
         // PUT: api/Puppies/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
@@ -121,10 +139,10 @@ namespace PuppiesAPI.Controllers
                 BirthDate = StringDateParser(puppyDTO.BirthDate)
             };
 
-            if (_context.Puppies == null)
-            {
-            return Problem("Entity set 'PuppyContext.Puppies'  is null.");
-            }
+            //if (_context.Puppies == null)
+            //{
+            //return Problem("Entity set 'PuppyContext.Puppies'  is null.");
+            //}
 
             _context.Puppies.Add(pupperino);
             await _context.SaveChangesAsync();
@@ -154,6 +172,26 @@ namespace PuppiesAPI.Controllers
 
             return NoContent();
         }
+
+        //// DELETE: api/Puppies/5
+        //[HttpDelete()]
+        //public async Task<IActionResult> DeleteAllPuppies()
+        //{
+        //    if (_context.Puppies == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    var tableName = _context.Puppies;
+        //    _context.Database.ExecuteSql($"TRUNCATE TABLE [{tableName}]");
+
+        //    //_context.ExecuteSqlCommand("TRUNCATE TABLE [TableName]")
+
+        //    //_context.Puppies.ExecuteDeleteAsync();
+        //    //await _context.SaveChangesAsync();
+
+        //    return NoContent();
+        //}
 
         private bool PuppyExists(Guid id)
         {

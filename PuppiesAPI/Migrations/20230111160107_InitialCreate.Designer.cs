@@ -11,7 +11,7 @@ using PuppiesAPI.Models;
 namespace PuppiesAPI.Migrations
 {
     [DbContext(typeof(PuppyContext))]
-    [Migration("20230107121832_InitialCreate")]
+    [Migration("20230111160107_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
